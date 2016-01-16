@@ -1,22 +1,16 @@
-__version__ = '1.0' #declare the app version. Will be used by buildozer
-
-
-from kivy.app import App #for the main app
-from kivy.uix.floatlayout import FloatLayout #the UI layout
-from plyer import camera #object to read the camera
+from kivy.app import App 
+from kivy.uix.floatlayout import FloatLayout 
+from plyer import camera 
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.clock import Clock
-import os, random,shutil
 from kivy.uix.image import Image
-from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.uix.camera import Camera
-from kivy.properties import ObjectProperty
 import uuid
-
+import os, random,shutil
 
 count=0
 sm = ScreenManager()
@@ -99,13 +93,13 @@ class MainScreen(Screen):
 		self.picture_path = '/storage/sdcard0/rand0mpics/' 
 		if not os.path.exists(self.picture_path):
 			os.makedirs(self.picture_path)
-		#center_image=ObjectProperty(None)
+		
+	def random_pic(self):	
+		Clock.schedule_interval(self.callback, 0.1)
 	
 	def callback(self,dt):
 		for dirpath, dirnames, files in os.walk(self.picture_path):
 			if files:
-				
-
 				self.ids['_center_image'].source=self.picture_path + random.choice(os.listdir(self.picture_path))
 				global count
 				count=count+1
@@ -115,16 +109,11 @@ class MainScreen(Screen):
 			else:
 				self.ids['_center_image'].source="init_pic.png"
 		
-	def random_pic(self):	
-		Clock.schedule_interval(self.callback, 0.1)
-		#anim = Animation(x=50, size=(50, 50), t='in_out_bounce')
-		#anim += Animation(pos=(200,70),t='in_out_back')
-		#anim &= Animation(size=(100,50))
-		#anim.start(self.center_image)
 	
 	def take_picture(self):
 		outname = str(uuid.uuid4())
 		self.ids['_center_image'].source='init_pic.png'
+		Clock.unschedule(self.callback)
 		camera.take_picture(self.picture_path+outname+'.jpg', self.done)
 
 	def done(self):
@@ -136,7 +125,7 @@ class MainScreen(Screen):
 			try:
 				if os.path.isfile(file_path):
 					os.unlink(file_path)
-        			#elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        			
 			except:
 				pass
 	
